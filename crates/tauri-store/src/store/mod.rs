@@ -331,6 +331,8 @@ where
     let marshaler = collection.marshaler_table.get(&self.id);
 
     // Apply save key filter if configured.
+    // `filtered_state` is declared outside the conditional block so that its lifetime
+    // extends to cover the `state_to_save` reference derived from it below.
     let filtered_state;
     let state_to_save: &StoreState = if let Some(filter) = &self.save_filter_keys {
       filtered_state = self.state.filtered(filter, self.save_filter_keys_strategy);

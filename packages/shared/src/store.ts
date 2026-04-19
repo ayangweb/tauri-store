@@ -218,10 +218,15 @@ export abstract class BaseStore<S extends State = State> {
    * Applies sync key filters to the state before sending to the backend.
    * Uses `syncFilterKeys`/`syncFilterKeysStrategy` if set,
    * otherwise falls back to `filterKeys`/`filterKeysStrategy`.
+   *
+   * Note: `syncFilterKeysStrategy` is only applied when `syncFilterKeys` is non-null.
+   * Setting `syncFilterKeys: null` (the default) always falls back to `filterKeys`.
    */
   protected applySyncKeyFilters(state: Partial<S>): Partial<S> {
     const syncFilter = this.options.syncFilterKeys ?? null;
+    // Fall back to filterKeys when syncFilterKeys is null (not explicitly set).
     const filter = syncFilter ?? (this.options.filterKeys ?? null);
+    // Use sync strategy only when a sync filter is active; otherwise use the regular strategy.
     const strategy =
       syncFilter != null
         ? (this.options.syncFilterKeysStrategy ?? DEFAULT_FILTER_KEYS_STRATEGY)
