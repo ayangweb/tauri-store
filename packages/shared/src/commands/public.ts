@@ -148,10 +148,19 @@ export function setStoreOptions(plugin: string) {
     const _options: StoreBackendRawOptions = {
       saveFilterKeys:
         options.saveFilterKeys !== undefined ? (options.saveFilterKeys ?? null) : undefined,
-      saveFilterKeysStrategy: options.saveFilterKeysStrategy ?? null,
+      saveFilterKeysStrategy:
+        options.saveFilterKeysStrategy !== undefined
+          ? (options.saveFilterKeysStrategy ?? null)
+          : undefined,
       saveOnChange: typeof options.saveOnChange === 'boolean' ? options.saveOnChange : null,
       saveOnExit: typeof options.saveOnExit === 'boolean' ? options.saveOnExit : null,
       saveStrategy,
+      syncFilterKeys:
+        options.syncFilterKeys !== undefined ? (options.syncFilterKeys ?? null) : undefined,
+      syncFilterKeysStrategy:
+        options.syncFilterKeysStrategy !== undefined
+          ? (options.syncFilterKeysStrategy ?? null)
+          : undefined,
     };
 
     return invoke(`plugin:${plugin}|set_store_options`, {
