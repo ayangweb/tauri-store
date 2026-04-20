@@ -50,6 +50,24 @@ export interface StoreBackendOptions {
    * @default 'omit'
    */
   saveFilterKeysStrategy?: 'pick' | 'omit';
+
+  /**
+   * Keys to filter when syncing state to other windows.
+   * This filter is applied on the Rust side before broadcasting state changes.
+   * Only `string` and `string[]` are supported (not `RegExp`).
+   *
+   * @default null
+   */
+  syncFilterKeys?: string | string[] | null;
+
+  /**
+   * Strategy to use when filtering keys during sync.
+   * - `pick`: Only the specified keys will be synced to other windows.
+   * - `omit`: All keys will be synced **except** the ones specified.
+   *
+   * @default 'omit'
+   */
+  syncFilterKeysStrategy?: 'pick' | 'omit';
 }
 
 /** @internal */
@@ -59,6 +77,8 @@ export interface StoreBackendRawOptions {
   readonly saveStrategy?: Option<TimeStrategyRawTuple>;
   readonly saveFilterKeys?: Option<string | string[]>;
   readonly saveFilterKeysStrategy?: Option<'pick' | 'omit'>;
+  readonly syncFilterKeys?: Option<string | string[]>;
+  readonly syncFilterKeysStrategy?: Option<'pick' | 'omit'>;
 }
 
 /** Options that can only be set from JavaScript. */
@@ -94,31 +114,6 @@ export interface StoreFrontendOptions<S extends State = State> {
    * @default 'omit'
    */
   readonly filterKeysStrategy?: StoreKeyFilterStrategy;
-
-  /**
-   * Keys to exclude from multi-window synchronization.
-   * These keys will not be sent to the Rust backend during sync.
-   *
-   * When set, this takes priority over `filterKeys` for sync operations.
-   * This option is ignored if you set a callback as the sync filter strategy.
-   *
-   * @default null
-   */
-  readonly syncFilterKeys?: StoreKeyFilter;
-
-  /**
-   * Strategy to use when filtering keys during sync.
-   * - `pick`: Only the specified keys will be synced.
-   * - `omit`: All keys will be synced **except** the ones specified.
-   *
-   * You can also provide a custom function called for each key.
-   * If the function returns `true`, the key will be synced.
-   *
-   * When set, this takes priority over `filterKeysStrategy` for sync operations.
-   *
-   * @default 'omit'
-   */
-  readonly syncFilterKeysStrategy?: StoreKeyFilterStrategy;
 
   /**
    * Hooks to run custom logic at specific points in the store lifecycle.

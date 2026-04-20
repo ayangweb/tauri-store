@@ -48,6 +48,10 @@ pub struct StoreOptions {
   pub save_filter_keys: Option<StoreKeyFilter>,
   /// Strategy to use when filtering keys during save.
   pub save_filter_keys_strategy: Option<StoreKeyFilterStrategy>,
+  /// Keys to filter when syncing state to other windows.
+  pub sync_filter_keys: Option<StoreKeyFilter>,
+  /// Strategy to use when filtering keys during sync.
+  pub sync_filter_keys_strategy: Option<StoreKeyFilterStrategy>,
 }
 
 impl<R, C> From<&Store<R, C>> for StoreOptions
@@ -62,6 +66,8 @@ where
       save_strategy: store.save_strategy,
       save_filter_keys: store.save_filter_keys.clone(),
       save_filter_keys_strategy: Some(store.save_filter_keys_strategy),
+      sync_filter_keys: store.sync_filter_keys.clone(),
+      sync_filter_keys_strategy: Some(store.sync_filter_keys_strategy),
     }
   }
 }
@@ -90,5 +96,13 @@ where
 
   if let Some(strategy) = options.save_filter_keys_strategy {
     store.save_filter_keys_strategy = strategy;
+  }
+
+  if let Some(keys) = options.sync_filter_keys {
+    store.sync_filter_keys = Some(keys);
+  }
+
+  if let Some(strategy) = options.sync_filter_keys_strategy {
+    store.sync_filter_keys_strategy = strategy;
   }
 }

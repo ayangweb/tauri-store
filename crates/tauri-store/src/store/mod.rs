@@ -61,6 +61,8 @@ where
   save_strategy: Option<SaveStrategy>,
   save_filter_keys: Option<StoreKeyFilter>,
   save_filter_keys_strategy: StoreKeyFilterStrategy,
+  sync_filter_keys: Option<StoreKeyFilter>,
+  sync_filter_keys_strategy: StoreKeyFilterStrategy,
   debounce_save_handle: OnceLock<SaveHandle<R>>,
   throttle_save_handle: OnceLock<SaveHandle<R>>,
   watchers: HashMap<WatcherId, Watcher<R>>,
@@ -94,6 +96,8 @@ where
       save_strategy: None,
       save_filter_keys: None,
       save_filter_keys_strategy: StoreKeyFilterStrategy::default(),
+      sync_filter_keys: None,
+      sync_filter_keys_strategy: StoreKeyFilterStrategy::default(),
       debounce_save_handle: OnceLock::new(),
       throttle_save_handle: OnceLock::new(),
       watchers: HashMap::new(),
@@ -458,10 +462,23 @@ where
       return Ok(());
     }
 
+    // Apply sync key filter if configured.
+    // This ensures only the relevant keys are sent to other windows.
+    let filtered_state;
+    let payload = if let Some(filter) = &self.sync_filter_keys {
+      filtered_state = self.state.filtered(filter, self.sync_filter_keys_strategy);
+      StatePayload {
+        id: &self.id,
+        state: &filtered_state,
+      }
+    } else {
+      StatePayload::from(self)
+    };
+
     emit(
       &self.app,
       STORE_STATE_CHANGE_EVENT,
-      &StatePayload::from(self),
+      &payload,
       source,
     )
   }
@@ -527,6 +544,8 @@ where
       .field("save_strategy", &self.save_strategy)
       .field("save_filter_keys", &self.save_filter_keys)
       .field("save_filter_keys_strategy", &self.save_filter_keys_strategy)
+      .field("sync_filter_keys", &self.sync_filter_keys)
+      .field("sync_filter_keys_strategy", &self.sync_filter_keys_strategy)
       .finish_non_exhaustive()
   }
 }

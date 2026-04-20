@@ -152,6 +152,9 @@ export function setStoreOptions(plugin: string) {
       saveOnChange: typeof options.saveOnChange === 'boolean' ? options.saveOnChange : null,
       saveOnExit: typeof options.saveOnExit === 'boolean' ? options.saveOnExit : null,
       saveStrategy,
+      syncFilterKeys:
+        options.syncFilterKeys !== undefined ? (options.syncFilterKeys ?? null) : undefined,
+      syncFilterKeysStrategy: options.syncFilterKeysStrategy ?? null,
     };
 
     return invoke(`plugin:${plugin}|set_store_options`, {
